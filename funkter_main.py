@@ -64,8 +64,8 @@ tlt_num_plot = 0
 wb = Workbook()
 excel_instance = Spreadsheet(wb)
 excel_instance.construct(path)
-excel_instance.constant_sheet('Volvo_L150.xlsx', "Cylinder")
-excel_instance.constant_sheet('Work_Profiles.xlsx', "Work Profiles")
+excel_instance.constant_sheet('constant_files\Volvo_L150.xlsx', "Cylinder")
+excel_instance.constant_sheet('constant_files\Work_Profiles.xlsx', "Work Profiles")
 
 #for testing:
 # cleaned_file_list = [cleaned_file_list[0]]
