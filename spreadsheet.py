@@ -10,7 +10,7 @@ class Spreadsheet:
     def __init__(self, wb):
         self.wb = wb
         self.sheets = ["CoverSheet", "Work Profiles", "Loads", "Cylinder", "Statistics", "Load Severity", "Histogram Charts", "Lift Pressure Histograms", "Tilt Pressure Histograms", "Steering Pressure Histograms", "Force Histograms"]
-        self.filename = "fela_datk.xlsx"
+        self.filename = "fela_datkgui.xlsx"
         self.hardbank = np.array([['Platform', '950 962 M&L', '950 962 AU2020', '966 972', '980 982'],
                             ['Hardbank', 70, 45, 90, 90],
                             ['Truck Loading', 0, 25, 0, 0],
