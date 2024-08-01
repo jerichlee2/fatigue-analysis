@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import filedialog, messagebox
 from PIL import Image, ImageTk
-from funkter import Funkter
+from fatigue import Funkter
 from openpyxl import Workbook
 from spreadsheet import Spreadsheet
 import sys
@@ -13,21 +13,14 @@ if hasattr(os, "add_dll_directory"):
 import numpy
 import D2D_Analysis
 import graphviz
-from graphviz import nohtml
+
+
 
 g = graphviz.Digraph('g', filename='btree.gv',
                      node_attr={'shape': 'record', 'height': '.1'})
 
-# Specify the directory path
-path = "C:\\Users\\leej85\\Desktop\\CAT_Internship_Jerich_Lee_2024\\Projects\\Structural_Analysis\\Cylinder_Analysis\\mwl_cylinder_load_analysis_doc\\data\\950L_TB_OMLA_2014\\950L_TB_OMLA_2014"
-
 # Get the list of all files and directories
-file_list = os.listdir(path)
 
-ending = '.thd'
-
-# Use list comprehension to filter strings with the specified ending
-cleaned_file_list = [s for s in file_list if s.endswith(ending)]
 
 #gui will allow user to open folder
 # file = 'C:\\Users\\leej85\\Desktop\\CAT_Internship_Jerich_Lee_2024\\Projects\\Structural_Analysis\\Cylinder_Analysis\\python\\python-examples\\950L_TB_OMLA_2014\\700_TruckLoading_2inchRock_04_10_15.thd'
@@ -44,12 +37,14 @@ def combined_tlt(func, pos):
 def get_last_folder(path):
    return os.path.basename(os.path.normpath(path))
 
-#for testing:
-# cleaned_file_list = [cleaned_file_list[0]]
-# cylinder_func = ['TLT']
-# cylinder_pos = ['HE']
-# sides = ['R']
 def process_files(path):
+
+   file_list = os.listdir(path)
+
+   ending = '.thd'
+
+# Use list comprehension to filter strings with the specified ending
+   cleaned_file_list = [s for s in file_list if s.endswith(ending)]
    #there are no R and L for TLT...
    # cylinder_func = ['LFT', 'TLT', 'STR']
    cylinder_func = ['LFT', 'STR', 'TLT']
@@ -66,24 +61,15 @@ def process_files(path):
    excel_instance.construct(path)
    excel_instance.constant_sheet('constant_files\Volvo_L150.xlsx', "Cylinder")
    excel_instance.constant_sheet('constant_files\Work_Profiles.xlsx', "Work Profiles")
-   g.node(f'Machine {get_last_folder(path)}')
    for i in range(len(cleaned_file_list)):
       file = path + "\\" + cleaned_file_list[i]
-      g.node(f'File {i}')
-      g.edge(f'Machine {get_last_folder(path)}', f'File {i}')
       for func in cylinder_func:
-         g.node(f'{func} {i}')
-         g.edge(f'File {i}', f'{func} {i}')
          if func == 'TLT':
             sides = ['L']
          else:
             sides = ['L', 'R']
          for side in sides:
-            g.node(f'{func} {side} {i}')
-            g.edge(f'{func} {i}', f'{func} {side} {i}')
             for pos in cylinder_pos:
-               g.node(f'{pos} {func} {side} {i}')
-               g.edge(f'{func} {side} {i}', f'{pos} {func} {side} {i}')
                if func == 'TLT':
                   combine = combined_tlt(func, pos)
                else:
@@ -181,7 +167,12 @@ def process_files(path):
 
    excel_instance.composite_load_severity()
 
-   g.view()
+   # g.view()
+
+   # Save and open the Excel file
+   excel_file_path = os.path.join(path, f"MWL_Load_Severity_{get_last_folder(path)}.xlsx")
+   wb.save(excel_file_path)
+   os.startfile(excel_file_path)
 
 def select_folder():
    folder_path = filedialog.askdirectory()
@@ -193,13 +184,16 @@ def select_folder():
            messagebox.showerror("Error", str(e))
 app = tk.Tk()
 app.title("Funkter")
-# Load logo image
-logo_path = "path_to_your_logo.png"  # Replace with your logo's path
+
+# Load and resize logo image
+logo_path = "constant_files/logo.png"  # Replace with your logo's path
 logo_image = Image.open(logo_path)
+logo_image = logo_image.resize((250, 250))  # Adjust the size as needed
 logo_photo = ImageTk.PhotoImage(logo_image)
 # Create a label for the logo
 logo_label = tk.Label(app, image=logo_photo)
 logo_label.pack(pady=10)
+
 frame = tk.Frame(app)
 frame.pack(pady=20)
 select_folder_button = tk.Button(frame, text="Select Folder", command=select_folder)
